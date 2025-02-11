@@ -1,0 +1,7 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "Laser_control")(type "KiCad")(uri "${KIPRJMOD}/Laser_control.kicad_sym")(options "")(descr ""))
+  (lib (name "SC0915")(type "KiCad")(uri "${KIPRJMOD}/parts/SC0915.kicad_sym")(options "")(descr ""))
+  (lib (name "XEL4030-102MEC")(type "KiCad")(uri "${KIPRJMOD}/parts/XEL4030-102MEC.kicad_sym")(options "")(descr ""))
+  (lib (name "FTSH-105-01-F-DV-P-TR")(type "KiCad")(uri "${KIPRJMOD}/parts/FTSH-105-01-F-DV-P-TR.kicad_sym")(options "")(descr ""))
+)
