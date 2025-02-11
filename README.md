@@ -64,7 +64,6 @@ This folder contains the Java plugin for Micromanager. The plugin extends Microm
 
 Files in this folder:
 - `LaserControllerUI.java`: The main code for the plugin.
-- `build.gradle`: Build configuration for the plugin.
 
 For details on how to set up and install Micromanager with this plugin, refer to the **Software Setup** section.
 
