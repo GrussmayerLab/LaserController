@@ -18,3 +18,4 @@ uManager/
 *.zip
 *.tar.gz
 *.rar
+/.metadata/

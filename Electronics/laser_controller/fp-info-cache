@@ -1,4 +1,4 @@
-24651219540558895
+24652959338470690
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -99357,6 +99357,13 @@ IND_XEL4030-102MEC
 0
 2
 2
+parts
+JST_S3B-PH-K-S_LF__SN_
+
+
+0
+3
+3
 parts
 MODULE_SC0915
 

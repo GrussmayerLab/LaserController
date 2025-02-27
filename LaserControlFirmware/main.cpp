@@ -5,11 +5,13 @@
 #include "pico/stdlib.h"
 #include <string.h> // For memset
 
+#define CLk_FREQ 100000
 #define SCLK 2
 #define MOSI 3
-#define CS_A 5
+#define CS_C 5
 #define CS_B 6
-#define CS_C 7
+#define CS_A 7
+#define OE 8
 #define PWM 16
 #define CMD_GET_DEVICE 0x01
 #define CMD_SET_LASER 0x02
@@ -43,9 +45,9 @@ void handleGetDevice();
 void handleSetLaser(uint8_t channel_id, uint16_t value);
 void handleSetMotor(uint16_t value);
 
-MCP4922 dac1(spi0, 1e5, SCLK, MOSI, CS_A);
-MCP4922 dac2(spi0, 1e5, SCLK, MOSI, CS_B);
-MCP4922 dac3(spi0, 1e5, SCLK, MOSI, CS_C);
+MCP4922 dac1(spi0, CLk_FREQ, SCLK, MOSI, CS_A);
+MCP4922 dac2(spi0, CLk_FREQ, SCLK, MOSI, CS_B);
+MCP4922 dac3(spi0, CLk_FREQ, SCLK, MOSI, CS_C);
 
 // FIFO Helper Functions
 bool isFIFOFull() { return ((fifo_head + 1) % QUEUE_SIZE) == fifo_tail; }
@@ -81,7 +83,16 @@ int main(void)
 
     printf("Pico USB Serial Ready\n");
 
-    uint16_t test = 0x0FF;
+    gpio_init(OE);
+    gpio_set_dir(OE, GPIO_OUT);
+    gpio_pull_up(OE);
+    gpio_put(OE, 1);
+
+    // uint16_t test = 0xFFF;
+
+    // dac1.analogWrite(MCP4922::channel_B, test);
+    // dac2.analogWrite(MCP4922::channel_B, test);
+    // dac3.analogWrite(MCP4922::channel_B, test);
 
     while (true)
     {
