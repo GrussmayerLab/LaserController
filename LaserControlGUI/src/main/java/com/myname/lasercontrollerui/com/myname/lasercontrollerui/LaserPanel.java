@@ -4,6 +4,7 @@ import de.embl.rieslab.emu.ui.ConfigurablePanel;
 import de.embl.rieslab.emu.ui.swinglisteners.SwingUIListeners;
 import de.embl.rieslab.emu.ui.uiparameters.ColorUIParameter;
 import de.embl.rieslab.emu.ui.uiparameters.StringUIParameter;
+import de.embl.rieslab.emu.ui.uiproperties.RescaledUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.TwoStateUIProperty;
 import de.embl.rieslab.emu.ui.uiproperties.UIProperty;
 import de.embl.rieslab.emu.utils.EmuUtils;
@@ -44,8 +45,6 @@ public class LaserPanel extends ConfigurablePanel {
 	public final String LASER_OPERATION = "enable";
 	public final String PARAM_TITLE = "Name";
 	public final String PARAM_COLOR = "Color";
-	private JTextField textField;
-	private JButton btnNewButton;
 	public LaserPanel(String label) {
 		super(label);
 		
@@ -74,15 +73,6 @@ public class LaserPanel extends ConfigurablePanel {
 		slider.setBounds(10, 43, 103, 179);
 		add(slider);
 		
-		textField = new JTextField();
-		textField.setBounds(10, 251, 86, 19);
-		add(textField);
-		textField.setColumns(10);
-		
-		btnNewButton = new JButton("Send Raw");
-		btnNewButton.setBounds(10, 269, 86, 21);
-		add(btnNewButton);
-		
         // Add internal listeners
         slider.addChangeListener(e -> {
             if (sliderListener != null) {
@@ -94,12 +84,6 @@ public class LaserPanel extends ConfigurablePanel {
         tglbtnOnoff.addActionListener(e -> {
             if (checkboxListener != null) {
                 checkboxListener.actionPerformed(new ActionEvent(tglbtnOnoff, ActionEvent.ACTION_PERFORMED, "checkbox"));
-            }
-        });
-        
-        btnNewButton.addActionListener(e -> {
-            if (buttonListener != null) {
-                buttonListener.actionPerformed(new ActionEvent(btnNewButton, ActionEvent.ACTION_PERFORMED, "button"));
             }
         });
 	}
@@ -119,10 +103,10 @@ public class LaserPanel extends ConfigurablePanel {
         this.buttonListener = listener;
     }
     
-    // Method to get the text from the text field
-    public String getTextFieldValue() {
-        return textField.getText();
-    }
+//    // Method to get the text from the text field
+//    public String getTextFieldValue() {
+//        return textField.getText();
+//    }
 
 	@Override
 	protected void addComponentListeners() {
@@ -161,13 +145,13 @@ public class LaserPanel extends ConfigurablePanel {
 	@Override
 	protected void initializeProperties() {
 		// Defines convenience variables
-		String text1 = "Property changing the power percentage of the laser.";
+		String text1 = "Property changing the power percentage of the device.";
 		String text2 = "Property turning the laser on and off.";
         String propertyName1 = getPanelLabel() + " " + LASER_PERCENTAGE;
         String propertyName2 = getPanelLabel() + " " + LASER_OPERATION;
 		
         // We declare a UIProperty for the laser percentage
-		addUIProperty(new UIProperty(this, propertyName1, text1));
+		addUIProperty(new RescaledUIProperty(this, propertyName1, text1));
 		
 		// and one for the laser on/off
 		addUIProperty(new TwoStateUIProperty(this, propertyName2, text2));
