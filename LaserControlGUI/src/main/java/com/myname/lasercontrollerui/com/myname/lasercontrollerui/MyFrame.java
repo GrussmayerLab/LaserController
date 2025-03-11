@@ -12,6 +12,11 @@ import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import com.fazecast.jSerialComm.*;
+import org.micromanager.Studio;
+import org.micromanager.data.Metadata.Builder;
+import org.micromanager.data.Metadata;
+import org.micromanager.PropertyMap;
+import org.micromanager.data.DataManager;
 
 public class MyFrame extends ConfigurableMainFrame {
 
@@ -147,7 +152,7 @@ public class MyFrame extends ConfigurableMainFrame {
                 short result;
                 if (motorButton) {
                     motorValue = motorPanel.getSlider().getValue();
-                    result = (short) (motorValue * 65535 / 100);
+                    result = (short) (motorValue * 32767 / 100);
                     serialDevice.sendMotorCommand(result);
                 }
             } catch (Exception ex) {
@@ -163,7 +168,7 @@ public class MyFrame extends ConfigurableMainFrame {
                 serialDevice.sendMotorCommand((byte) 0);
             } else {
                 motorValue = motorPanel.getSlider().getValue();
-                result = (short) (motorValue * 65535 / 100);
+                result = (short) (motorValue * 32767 / 100);
                 serialDevice.sendMotorCommand(result);
             }
         });
@@ -200,9 +205,9 @@ public class MyFrame extends ConfigurableMainFrame {
                 int value = Integer.parseInt(textValue); // Convert to integer
 
                 // Ensure the value is within the valid range (0-100)
-                if (value >= 0 && value <= 65355) {
+                if (value >= 0 && value <= 32767) {
                     // Update the slider and label in the LaserPanel
-                	int percentage = (int)(value * 100 / 65355);
+                	int percentage = (int)(value * 100 / 32767);
                 	motorPanel.getSlider().setValue(percentage);
                 	motorPanel.getLblNewLabel().setText(percentage + "%");
 
@@ -215,7 +220,7 @@ public class MyFrame extends ConfigurableMainFrame {
                     }
                 } else {
                     // Handle invalid range (optional: show an error message)
-                    System.out.println("Value must be between 0 and 65355.");
+                    System.out.println("Value must be between 0 and 32767.");
                 }
             } else {
                 // Handle invalid input (optional: show an error message)

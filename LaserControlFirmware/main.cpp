@@ -237,9 +237,9 @@ void handleSetLaser(uint8_t channel_id, uint16_t value)
 
     // Array of corresponding channels
     MCP4922::Channel channels[] = {
-        MCP4922::channel_A, MCP4922::channel_B,
-        MCP4922::channel_A, MCP4922::channel_B,
-        MCP4922::channel_A, MCP4922::channel_B};
+        MCP4922::channel_B, MCP4922::channel_A,
+        MCP4922::channel_B, MCP4922::channel_A,
+        MCP4922::channel_B, MCP4922::channel_A};
 
     if (channel_id < 6)
     {
