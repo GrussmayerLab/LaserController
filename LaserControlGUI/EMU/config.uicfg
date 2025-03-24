@@ -1,0 +1,86 @@
+{
+  "defaultConfigurationName": "Lasercontroller",
+  "globalSettings": {
+    "Enable unallocated warnings": "true"
+  },
+  "pluginConfigurations": [
+    {
+      "configurationName": "Lasercontroller",
+      "pluginName": "MyUI",
+      "properties": {
+        "laser0 enable": "Unallocated",
+        "laser0 enable - Off value": "Enter value",
+        "laser0 enable - On value": "Enter value",
+        "laser0 power percentage": "Unallocated",
+        "laser1 enable": "Unallocated",
+        "laser1 enable - Off value": "Enter value",
+        "laser1 enable - On value": "Enter value",
+        "laser1 power percentage": "Unallocated",
+        "laser2 enable": "Unallocated",
+        "laser2 enable - Off value": "Enter value",
+        "laser2 enable - On value": "Enter value",
+        "laser2 power percentage": "Unallocated",
+        "laser3 enable": "Unallocated",
+        "laser3 enable - Off value": "Enter value",
+        "laser3 enable - On value": "Enter value",
+        "laser3 power percentage": "Unallocated",
+        "laser4 enable": "Unallocated",
+        "laser4 enable - Off value": "Enter value",
+        "laser4 enable - On value": "Enter value",
+        "laser4 power percentage": "Unallocated"
+      },
+      "parameters": {
+        "laser0 - Color": "violet",
+        "laser0 - Name": "laser0",
+        "laser1 - Color": "black",
+        "laser1 - Name": "laser1",
+        "laser2 - Color": "black",
+        "laser2 - Name": "laser2",
+        "laser3 - Color": "black",
+        "laser3 - Name": "laser3",
+        "laser4 - Color": "black",
+        "laser4 - Name": "laser4"
+      },
+      "settings": {}
+    },
+    {
+      "configurationName": "MyUI",
+      "pluginName": "MyUI",
+      "properties": {
+        "laser0 enable": "Unallocated",
+        "laser0 enable - Off value": "Enter value",
+        "laser0 enable - On value": "Enter value",
+        "laser0 power percentage": "Unallocated",
+        "laser1 enable": "Unallocated",
+        "laser1 enable - Off value": "Enter value",
+        "laser1 enable - On value": "Enter value",
+        "laser1 power percentage": "Unallocated",
+        "laser2 enable": "Unallocated",
+        "laser2 enable - Off value": "Enter value",
+        "laser2 enable - On value": "Enter value",
+        "laser2 power percentage": "Unallocated",
+        "laser3 enable": "Unallocated",
+        "laser3 enable - Off value": "Enter value",
+        "laser3 enable - On value": "Enter value",
+        "laser3 power percentage": "Unallocated",
+        "laser4 enable": "Unallocated",
+        "laser4 enable - Off value": "Enter value",
+        "laser4 enable - On value": "Enter value",
+        "laser4 power percentage": "Unallocated"
+      },
+      "parameters": {
+        "laser0 - Color": "yellow",
+        "laser0 - Name": "laser0",
+        "laser1 - Color": "black",
+        "laser1 - Name": "laser1",
+        "laser2 - Color": "black",
+        "laser2 - Name": "laser2",
+        "laser3 - Color": "black",
+        "laser3 - Name": "laser3",
+        "laser4 - Color": "black",
+        "laser4 - Name": "laser4"
+      },
+      "settings": {}
+    }
+  ]
+}
