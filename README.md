@@ -11,7 +11,7 @@
    - Download and install [MicroManager 2.0](https://download.micro-manager.org/nightly/2.0/Windows/).
 
 3. **Copy Files**:
-   - Copy the precompiled `EMU` folder into the root directory of MicroManager.
+   - Copy the precompiled `EMU` folder and `mmgr_dal_GrussmayerLab-LaserController.dll` into the root directory of MicroManager.
 
 4. **Use the LaserControlGUI Plugin**:
    - Run MicroManager, open the **LaserControlGUI** plugin, and start controlling the laser!
