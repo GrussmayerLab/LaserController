@@ -1,9 +1,10 @@
 # Laser Controller Project
 
-This repository consists of the hardware, firmware, and software design for the Laser Controller system. It is divided into three main sections:
+This repository consists of the hardware, firmware, and software design for the Laser Controller system. It is divided into four main sections:
 
 - **Electronics**: Schematic and PCB design files for the laser controller.
 - **LaserControlFirmware**: C/C++ firmware for the Raspberry Pi Pico.
+- **GrussmayerLab-LaserController**: C++ Micromanager Device Adapter to drive the laser controller.
 - **LaserControllerUI**: Java-based plugin for Micromanager, built upon the EMU plugin.
 
 ## Table of Contents
