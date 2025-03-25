@@ -14,7 +14,7 @@
    - Copy the precompiled `EMU` folder and `mmgr_dal_GrussmayerLab-LaserController.dll` into the root directory of MicroManager.
 
 4. **Use the LaserControlGUI Plugin**:
-   - Run MicroManager, open the **LaserControlGUI** plugin, and start controlling the laser!
+   - Run MicroManager, open the **LaserControlGUI** plugin from **EMU**, and start controlling the laser!
 
 ---
 
