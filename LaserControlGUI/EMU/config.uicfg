@@ -5,29 +5,65 @@
   },
   "pluginConfigurations": [
     {
+      "configurationName": "FocusLock",
+      "pluginName": "FocusLock",
+      "properties": {
+        "settings average": "gFocus Light Sensor-Average #",
+        "settings average offset": "0.0",
+        "settings average slope": "1.0",
+        "settings exposure": "gFocus Light Sensor-Time [ms]",
+        "settings exposure offset": "0.0",
+        "settings exposure slope": "1.0"
+      },
+      "parameters": {},
+      "settings": {}
+    },
+    {
       "configurationName": "Lasercontroller",
       "pluginName": "MyUI",
       "properties": {
-        "laser0 enable": "Unallocated",
-        "laser0 enable - Off value": "Enter value",
-        "laser0 enable - On value": "Enter value",
-        "laser0 power percentage": "Unallocated",
-        "laser1 enable": "Unallocated",
-        "laser1 enable - Off value": "Enter value",
-        "laser1 enable - On value": "Enter value",
-        "laser1 power percentage": "Unallocated",
-        "laser2 enable": "Unallocated",
-        "laser2 enable - Off value": "Enter value",
-        "laser2 enable - On value": "Enter value",
-        "laser2 power percentage": "Unallocated",
-        "laser3 enable": "Unallocated",
-        "laser3 enable - Off value": "Enter value",
-        "laser3 enable - On value": "Enter value",
-        "laser3 power percentage": "Unallocated",
-        "laser4 enable": "Unallocated",
-        "laser4 enable - Off value": "Enter value",
-        "laser4 enable - On value": "Enter value",
-        "laser4 power percentage": "Unallocated"
+        "laser0 enable": "LaserController-DAC1-State",
+        "laser0 enable - Off value": "0",
+        "laser0 enable - On value": "1",
+        "laser0 power percentage": "LaserController-DAC1-Volts",
+        "laser0 power percentage offset": "0.0",
+        "laser0 power percentage slope": "0.05",
+        "laser1 enable": "LaserController-DAC2-State",
+        "laser1 enable - Off value": "0",
+        "laser1 enable - On value": "1",
+        "laser1 power percentage": "LaserController-DAC2-Volts",
+        "laser1 power percentage offset": "0.0",
+        "laser1 power percentage slope": "0.05",
+        "laser2 enable": "LaserController-DAC3-Volts",
+        "laser2 enable - Off value": "0",
+        "laser2 enable - On value": "1",
+        "laser2 power percentage": "LaserController-DAC3-Volts",
+        "laser2 power percentage offset": "0.0",
+        "laser2 power percentage slope": "0.05",
+        "laser3 enable": "LaserController-DAC4-State",
+        "laser3 enable - Off value": "0",
+        "laser3 enable - On value": "1",
+        "laser3 power percentage": "LaserController-DAC4-Volts",
+        "laser3 power percentage offset": "0.0",
+        "laser3 power percentage slope": "0.05",
+        "laser4 enable": "LaserController-DAC5-State",
+        "laser4 enable - Off value": "0",
+        "laser4 enable - On value": "1",
+        "laser4 power percentage": "LaserController-DAC5-Volts",
+        "laser4 power percentage offset": "0.0",
+        "laser4 power percentage slope": "0.05",
+        "laser5 enable": "LaserController-DAC6-State",
+        "laser5 enable - Off value": "0",
+        "laser5 enable - On value": "1",
+        "laser5 power percentage": "LaserController-DAC6-Volts",
+        "laser5 power percentage offset": "0.0",
+        "laser5 power percentage slope": "0.05",
+        "laser6 enable": "LaserController-PWM-State",
+        "laser6 enable - Off value": "0",
+        "laser6 enable - On value": "1",
+        "laser6 power percentage": "LaserController-PWM-Volts",
+        "laser6 power percentage offset": "0.0",
+        "laser6 power percentage slope": "1.0"
       },
       "parameters": {
         "laser0 - Color": "violet",
@@ -39,7 +75,11 @@
         "laser3 - Color": "black",
         "laser3 - Name": "laser3",
         "laser4 - Color": "black",
-        "laser4 - Name": "laser4"
+        "laser4 - Name": "laser4",
+        "laser5 - Color": "black",
+        "laser5 - Name": "laser5",
+        "laser6 - Color": "yellow",
+        "laser6 - Name": "motor"
       },
       "settings": {}
     },
@@ -81,6 +121,33 @@
         "laser4 - Name": "laser4"
       },
       "settings": {}
+    },
+    {
+      "configurationName": "iBeamSmart control",
+      "pluginName": "iBeamSmart control",
+      "properties": {
+        "Laser #0 enable fine": "Unallocated",
+        "Laser #0 enable fine - Off value": "Enter value",
+        "Laser #0 enable fine - On value": "Enter value",
+        "Laser #0 ext. trigger": "Unallocated",
+        "Laser #0 ext. trigger - Off value": "Enter value",
+        "Laser #0 ext. trigger - On value": "Enter value",
+        "Laser #0 fine a (%)": "gFocus Light Sensor-Time [ms]",
+        "Laser #0 fine b (%)": "Unallocated",
+        "Laser #0 laser power": "gFocus Light Sensor-Average #",
+        "Laser #0 max power": "Unallocated",
+        "Laser #0 operation": "Unallocated",
+        "Laser #0 operation - Off value": "Enter value",
+        "Laser #0 operation - On value": "Enter value"
+      },
+      "parameters": {
+        "Laser #0 - ext. trigger available": "true",
+        "Laser #0 - fine available": "true",
+        "Laser #0 - laser name": "Laser"
+      },
+      "settings": {
+        "Number of lasers": "1"
+      }
     }
   ]
 }

@@ -9,20 +9,19 @@
 #include <windows.h>
 #endif
 
-const char* g_DeviceNameHub = "LaserController-Hub";
-const char* g_DeviceNameDAC = "LaserController-DAC";
-const char* g_DeviceNamePWM = "LaserController-PWM";
+const char *g_DeviceNameHub = "LaserController-Hub";
+const char *g_DeviceNameDAC = "LaserController-DAC";
+const char *g_DeviceNamePWM = "LaserController-PWM";
 
 // Global info about the state of the Arduino.  This should be folded into a class
 const int g_Min_MMVersion = 1;
 const int g_Max_MMVersion = 3;
-const char* g_versionProp = "Version";
-const char* g_normalLogicString = "Normal";
-const char* g_invertedLogicString = "Inverted";
+const char *g_versionProp = "Version";
+const char *g_normalLogicString = "Normal";
+const char *g_invertedLogicString = "Inverted";
 
-const char* g_On = "On";
-const char* g_Off = "Off";
-
+const char *g_On = "On";
+const char *g_Off = "Off";
 
 ///////////////////////////////////////////////////////////////////////////////
 // Exported MMDevice API
@@ -30,18 +29,16 @@ const char* g_Off = "Off";
 MODULE_API void InitializeModuleData()
 {
     RegisterDevice(g_DeviceNameHub, MM::HubDevice, "Hub (required)");
+    RegisterDevice("LaserController-DAC0", MM::SignalIODevice, "DAC channel 0");
     RegisterDevice("LaserController-DAC1", MM::SignalIODevice, "DAC channel 1");
     RegisterDevice("LaserController-DAC2", MM::SignalIODevice, "DAC channel 2");
     RegisterDevice("LaserController-DAC3", MM::SignalIODevice, "DAC channel 3");
     RegisterDevice("LaserController-DAC4", MM::SignalIODevice, "DAC channel 4");
-    RegisterDevice("LaserController-DAC5", MM::SignalIODevice, "DAC channel 5");
-    RegisterDevice("LaserController-DAC6", MM::SignalIODevice, "DAC channel 6");
-    RegisterDevice("LaserController-DAC7", MM::SignalIODevice, "DAC channel 7");
-    RegisterDevice("LaserController-DAC8", MM::SignalIODevice, "DAC channel 8");
+    //RegisterDevice("LaserController-DAC5", MM::SignalIODevice, "DAC channel 5");
     RegisterDevice(g_DeviceNamePWM, MM::SignalIODevice, "PWM channel");
 }
 
-MODULE_API MM::Device* CreateDevice(const char* deviceName)
+MODULE_API MM::Device *CreateDevice(const char *deviceName)
 {
     if (deviceName == 0)
         return 0;
@@ -50,37 +47,29 @@ MODULE_API MM::Device* CreateDevice(const char* deviceName)
     {
         return new LaserManagerHub;
     }
-    else if (strcmp(deviceName, "LaserController-DAC1") == 0)
+    else if (strcmp(deviceName, "LaserController-DAC0") == 0)
     {
         return new LaserManagerDAC(1);
     }
-    else if (strcmp(deviceName, "LaserController-DAC2") == 0)
+    else if (strcmp(deviceName, "LaserController-DAC1") == 0)
     {
         return new LaserManagerDAC(2);
     }
+    else if (strcmp(deviceName, "LaserController-DAC2") == 0)
+    {
+        return new LaserManagerDAC(3);
+    }
     else if (strcmp(deviceName, "LaserController-DAC3") == 0)
     {
-        return new LaserManagerDAC(3); 
+        return new LaserManagerDAC(4);
     }
     else if (strcmp(deviceName, "LaserController-DAC4") == 0)
     {
-        return new LaserManagerDAC(4); 
+        return new LaserManagerDAC(5);
     }
     else if (strcmp(deviceName, "LaserController-DAC5") == 0)
     {
-        return new LaserManagerDAC(5);
-    }
-    else if (strcmp(deviceName, "LaserController-DAC6") == 0)
-    {
         return new LaserManagerDAC(6);
-    }
-    else if (strcmp(deviceName, "LaserController-DAC7") == 0)
-    {
-        return new LaserManagerDAC(7);
-    }
-    else if (strcmp(deviceName, "LaserController-DAC8") == 0)
-    {
-        return new LaserManagerDAC(8);
     }
     else if (strcmp(deviceName, g_DeviceNamePWM) == 0)
     {
@@ -89,14 +78,13 @@ MODULE_API MM::Device* CreateDevice(const char* deviceName)
     return 0;
 }
 
-MODULE_API void DeleteDevice(MM::Device* pDevice)
+MODULE_API void DeleteDevice(MM::Device *pDevice)
 {
     delete pDevice;
 }
 
-LaserManagerHub::LaserManagerHub() :
-    initialized_(false),
-    version_(0)
+LaserManagerHub::LaserManagerHub() : initialized_(false),
+                                     version_(0)
 {
     portAvailable_ = false;
     invertedLogic_ = false;
@@ -114,16 +102,17 @@ LaserManagerHub::LaserManagerHub() :
     SetErrorText(ERR_VERSION_MISMATCH, errorText.str().c_str());
     std::cout << "test2" << std::endl;
 
-    CPropertyAction* pAct = new CPropertyAction(this, &LaserManagerHub::OnPort);
+    CPropertyAction *pAct = new CPropertyAction(this, &LaserManagerHub::OnPort);
     CreateProperty(MM::g_Keyword_Port, "Undefined", MM::String, false, pAct, true);
     std::cout << "test3" << std::endl;
 }
 
-LaserManagerHub::~LaserManagerHub() {
+LaserManagerHub::~LaserManagerHub()
+{
     Shutdown();
 }
 
-void LaserManagerHub::GetName(char* Name) const
+void LaserManagerHub::GetName(char *Name) const
 {
     CDeviceUtils::CopyLimitedString(Name, g_DeviceNameHub);
 }
@@ -133,12 +122,13 @@ bool LaserManagerHub::Busy()
     return false;
 }
 
-int LaserManagerHub::GetControllerVersion(int& version)
+int LaserManagerHub::GetControllerVersion(int &version)
 {
     std::vector<uint8_t> message = protocol_.createGetDeviceMessage();
 
     int ret = WriteToComPort(port_.c_str(), message.data(), static_cast<unsigned int>(message.size()));
-    if (ret != DEVICE_OK) return ret;
+    if (ret != DEVICE_OK)
+        return ret;
 
     std::string ans;
 
@@ -146,7 +136,8 @@ int LaserManagerHub::GetControllerVersion(int& version)
     ans = ans + "\x7F";
     std::vector<uint8_t> buffer(ans.begin(), ans.end());
     std::ostringstream oss;
-    for (uint8_t b : buffer) {
+    for (uint8_t b : buffer)
+    {
         oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(b) << " ";
     }
     LogMessage("Message: " + oss.str(), true);
@@ -159,7 +150,7 @@ int LaserManagerHub::GetControllerVersion(int& version)
         return DEVICE_OK;
     else
         LogMessage(protocol_.getError());
-        return DEVICE_NOT_CONNECTED;
+    return DEVICE_NOT_CONNECTED;
 }
 
 bool LaserManagerHub::SupportsDeviceDetection(void)
@@ -196,7 +187,7 @@ MM::DeviceDetectionStatus LaserManagerHub::DetectDevice(void)
             // Arduino timed out in GetControllerVersion even if AnswerTimeout  = 300 ms
             GetCoreCallback()->SetDeviceProperty(port_.c_str(), "AnswerTimeout", "500.0");
             GetCoreCallback()->SetDeviceProperty(port_.c_str(), "DelayBetweenCharsMs", "0");
-            MM::Device* pS = GetCoreCallback()->GetDevice(this, port_.c_str());
+            MM::Device *pS = GetCoreCallback()->GetDevice(this, port_.c_str());
             pS->Initialize();
             // The first second or so after opening the serial port, the Arduino is waiting for firmwareupgrades.  Simply sleep 1 second.
             CDeviceUtils::SleepMs(1000);
@@ -217,7 +208,6 @@ MM::DeviceDetectionStatus LaserManagerHub::DetectDevice(void)
             pS->Shutdown();
             // always restore the AnswerTimeout to the default
             GetCoreCallback()->SetDeviceProperty(port_.c_str(), "AnswerTimeout", answerTO);
-
         }
     }
     catch (...)
@@ -245,13 +235,14 @@ int LaserManagerHub::Initialize()
     // Check that we have a controller:
     PurgeComPort(port_.c_str());
     ret = GetControllerVersion(version_);
-    if (DEVICE_OK != ret) {
+    if (DEVICE_OK != ret)
+    {
         std::cout << "get version error" << std::endl;
         return ret;
     }
 
-    CPropertyAction* pAct = new CPropertyAction(this, &LaserManagerHub::OnVersion);
-    
+    CPropertyAction *pAct = new CPropertyAction(this, &LaserManagerHub::OnVersion);
+
     CreateProperty(g_versionProp, "1.0", MM::Integer, true, pAct);
 
     initialized_ = true;
@@ -264,13 +255,14 @@ int LaserManagerHub::DetectInstalledDevices()
     {
         std::vector<std::string> peripherals;
         peripherals.clear();
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 9; i++)
+        {
             peripherals.push_back(g_DeviceNameDAC + std::to_string(i));
         }
         peripherals.push_back(g_DeviceNamePWM);
         for (size_t i = 0; i < peripherals.size(); i++)
         {
-            MM::Device* pDev = ::CreateDevice(peripherals[i].c_str());
+            MM::Device *pDev = ::CreateDevice(peripherals[i].c_str());
             if (pDev)
             {
                 AddInstalledDevice(pDev);
@@ -287,7 +279,7 @@ int LaserManagerHub::Shutdown()
     return DEVICE_OK;
 }
 
-int LaserManagerHub::OnPort(MM::PropertyBase* pProp, MM::ActionType pAct)
+int LaserManagerHub::OnPort(MM::PropertyBase *pProp, MM::ActionType pAct)
 {
     if (pAct == MM::BeforeGet)
     {
@@ -301,7 +293,7 @@ int LaserManagerHub::OnPort(MM::PropertyBase* pProp, MM::ActionType pAct)
     return DEVICE_OK;
 }
 
-int LaserManagerHub::OnVersion(MM::PropertyBase* pProp, MM::ActionType pAct)
+int LaserManagerHub::OnVersion(MM::PropertyBase *pProp, MM::ActionType pAct)
 {
     if (pAct == MM::BeforeGet)
     {
@@ -313,16 +305,15 @@ int LaserManagerHub::OnVersion(MM::PropertyBase* pProp, MM::ActionType pAct)
 ///////////////////////////////////////////////////////////////////////////////
 // LaserManagerDAC implementation
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
-LaserManagerDAC::LaserManagerDAC(int channel) :
-    busy_(false),
-    minV_(0.0),
-    maxV_(5.0),
-    volts_(0.0),
-    gatedVolts_(0.0),
-    channel_(channel),
-    maxChannel_(8),
-    gateOpen_(false),
-    initialized_(false)
+LaserManagerDAC::LaserManagerDAC(int channel) : busy_(false),
+                                                minV_(0.0),
+                                                maxV_(5.0),
+                                                volts_(0.0),
+                                                gatedVolts_(0.0),
+                                                channel_(channel),
+                                                maxChannel_(8),
+                                                gateOpen_(false),
+                                                initialized_(false)
 {
     InitializeDefaultErrorMessages();
 
@@ -333,7 +324,7 @@ LaserManagerDAC::LaserManagerDAC(int channel) :
     SetErrorText(ERR_CLOSE_FAILED, "Failed closing the device");
     SetErrorText(ERR_NO_PORT_SET, "Hub Device not found.  The device is needed to create this device");
 
-    CPropertyAction* pAct = new CPropertyAction(this, &LaserManagerDAC::OnMaxVolt);
+    CPropertyAction *pAct = new CPropertyAction(this, &LaserManagerDAC::OnMaxVolt);
     CreateProperty("MaxVolt", "5.0", MM::Float, false, pAct, true);
 
     name_ = g_DeviceNameDAC + std::to_string(channel_);
@@ -355,15 +346,16 @@ LaserManagerDAC::~LaserManagerDAC()
     Shutdown();
 }
 
-void LaserManagerDAC::GetName(char* name) const
+void LaserManagerDAC::GetName(char *name) const
 {
     CDeviceUtils::CopyLimitedString(name, name_.c_str());
 }
 
 int LaserManagerDAC::Initialize()
 {
-    LaserManagerHub* hub = static_cast<LaserManagerHub*>(GetParentHub());
-    if (!hub || !hub->IsPortAvailable()) {
+    LaserManagerHub *hub = static_cast<LaserManagerHub *>(GetParentHub());
+    if (!hub || !hub->IsPortAvailable())
+    {
         return ERR_NO_PORT_SET;
     }
     char hubLabel[MM::MaxStrLength];
@@ -375,13 +367,13 @@ int LaserManagerDAC::Initialize()
 
     // State
     // -----
-    CPropertyAction* pActV = new CPropertyAction(this, &LaserManagerDAC::OnVolts);
+    CPropertyAction *pActV = new CPropertyAction(this, &LaserManagerDAC::OnVolts);
     int nRet = CreateProperty("Volts", "0.0", MM::Float, false, pActV);
     if (nRet != DEVICE_OK)
         return nRet;
     SetPropertyLimits("Volts", minV_, maxV_);
 
-    CPropertyAction* pActB = new CPropertyAction(this, &LaserManagerDAC::OnState);
+    CPropertyAction *pActB = new CPropertyAction(this, &LaserManagerDAC::OnState);
     nRet = CreateProperty(MM::g_Keyword_State, "0", MM::Integer, false, pActB);
     if (nRet != DEVICE_OK)
         return nRet;
@@ -403,7 +395,7 @@ int LaserManagerDAC::Shutdown()
 
 int LaserManagerDAC::WriteToPort(unsigned long value)
 {
-    LaserManagerHub* hub = static_cast<LaserManagerHub*>(GetParentHub());
+    LaserManagerHub *hub = static_cast<LaserManagerHub *>(GetParentHub());
     if (!hub || !hub->IsPortAvailable())
         return ERR_NO_PORT_SET;
 
@@ -413,17 +405,17 @@ int LaserManagerDAC::WriteToPort(unsigned long value)
 
     Protocol::SetLaserCommand laserCommand{
         (uint8_t)channel_,
-        (uint16_t)value
-    };
+        (uint16_t)value};
 
     std::vector<uint8_t> message = protocol_.createSetLaserMessage(laserCommand);
 
     // Convert full message to hex string
     std::ostringstream msgHexStream;
     msgHexStream << "[";
-    for (size_t i = 0; i < message.size(); ++i) {
+    for (size_t i = 0; i < message.size(); ++i)
+    {
         msgHexStream << "0x" << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
-            << static_cast<int>(message[i]);
+                     << static_cast<int>(message[i]);
         if (i != message.size() - 1)
             msgHexStream << " ";
     }
@@ -450,11 +442,13 @@ int LaserManagerDAC::WriteSignal(double volts)
 int LaserManagerDAC::SetSignal(double volts)
 {
     volts_ = volts;
-    if (gateOpen_) {
+    if (gateOpen_)
+    {
         gatedVolts_ = volts_;
         return WriteSignal(volts_);
     }
-    else {
+    else
+    {
         gatedVolts_ = 0;
     }
 
@@ -463,7 +457,8 @@ int LaserManagerDAC::SetSignal(double volts)
 
 int LaserManagerDAC::SetGateOpen(bool open)
 {
-    if (open) {
+    if (open)
+    {
         gateOpen_ = true;
         gatedVolts_ = volts_;
         return WriteSignal(volts_);
@@ -477,7 +472,7 @@ int LaserManagerDAC::SetGateOpen(bool open)
 // Action handlers
 ///////////////////////////////////////////////////////////////////////////////
 
-int LaserManagerDAC::OnVolts(MM::PropertyBase* pProp, MM::ActionType eAct)
+int LaserManagerDAC::OnVolts(MM::PropertyBase *pProp, MM::ActionType eAct)
 {
     if (eAct == MM::BeforeGet)
     {
@@ -493,7 +488,7 @@ int LaserManagerDAC::OnVolts(MM::PropertyBase* pProp, MM::ActionType eAct)
     return DEVICE_OK;
 }
 
-int LaserManagerDAC::OnMaxVolt(MM::PropertyBase* pProp, MM::ActionType eAct)
+int LaserManagerDAC::OnMaxVolt(MM::PropertyBase *pProp, MM::ActionType eAct)
 {
     if (eAct == MM::BeforeGet)
     {
@@ -504,12 +499,11 @@ int LaserManagerDAC::OnMaxVolt(MM::PropertyBase* pProp, MM::ActionType eAct)
         pProp->Get(maxV_);
         if (HasProperty("Volts"))
             SetPropertyLimits("Volts", 0.0, maxV_);
-
     }
     return DEVICE_OK;
 }
 
-int LaserManagerDAC::OnChannel(MM::PropertyBase* pProp, MM::ActionType eAct)
+int LaserManagerDAC::OnChannel(MM::PropertyBase *pProp, MM::ActionType eAct)
 {
     if (eAct == MM::BeforeGet)
     {
@@ -525,7 +519,7 @@ int LaserManagerDAC::OnChannel(MM::PropertyBase* pProp, MM::ActionType eAct)
     return DEVICE_OK;
 }
 
-int LaserManagerDAC::OnState(MM::PropertyBase* pProp, MM::ActionType eAct)
+int LaserManagerDAC::OnState(MM::PropertyBase *pProp, MM::ActionType eAct)
 {
     if (eAct == MM::BeforeGet)
     {
@@ -548,16 +542,15 @@ int LaserManagerDAC::OnState(MM::PropertyBase* pProp, MM::ActionType eAct)
 ///////////////////////////////////////////////////////////////////////////////
 // LaserManagerPWM implementation
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
-LaserManagerPWM::LaserManagerPWM(int channel) :
-    busy_(false),
-    minV_(0.0),
-    maxV_(1.0),
-    volts_(0.0),
-    gatedVolts_(0.0),
-    channel_(channel),
-    maxChannel_(8),
-    gateOpen_(false),
-    initialized_(false)
+LaserManagerPWM::LaserManagerPWM(int channel) : busy_(false),
+                                                minV_(0.0),
+                                                maxV_(1.0),
+                                                volts_(0.0),
+                                                gatedVolts_(0.0),
+                                                channel_(channel),
+                                                maxChannel_(8),
+                                                gateOpen_(false),
+                                                initialized_(false)
 {
     InitializeDefaultErrorMessages();
 
@@ -568,7 +561,7 @@ LaserManagerPWM::LaserManagerPWM(int channel) :
     SetErrorText(ERR_CLOSE_FAILED, "Failed closing the device");
     SetErrorText(ERR_NO_PORT_SET, "Hub Device not found.  The device is needed to create this device");
 
-    CPropertyAction* pAct = new CPropertyAction(this, &LaserManagerPWM::OnMaxVolt);
+    CPropertyAction *pAct = new CPropertyAction(this, &LaserManagerPWM::OnMaxVolt);
     CreateProperty("MaxVolt", "1.0", MM::Float, false, pAct, true);
 
     name_ = g_DeviceNamePWM;
@@ -590,15 +583,16 @@ LaserManagerPWM::~LaserManagerPWM()
     Shutdown();
 }
 
-void LaserManagerPWM::GetName(char* name) const
+void LaserManagerPWM::GetName(char *name) const
 {
     CDeviceUtils::CopyLimitedString(name, name_.c_str());
 }
 
 int LaserManagerPWM::Initialize()
 {
-    LaserManagerHub* hub = static_cast<LaserManagerHub*>(GetParentHub());
-    if (!hub || !hub->IsPortAvailable()) {
+    LaserManagerHub *hub = static_cast<LaserManagerHub *>(GetParentHub());
+    if (!hub || !hub->IsPortAvailable())
+    {
         return ERR_NO_PORT_SET;
     }
     char hubLabel[MM::MaxStrLength];
@@ -610,13 +604,13 @@ int LaserManagerPWM::Initialize()
 
     // State
     // -----
-    CPropertyAction* pActV = new CPropertyAction(this, &LaserManagerPWM::OnVolts);
+    CPropertyAction *pActV = new CPropertyAction(this, &LaserManagerPWM::OnVolts);
     int nRet = CreateProperty("Volts", "0.0", MM::Float, false, pActV);
     if (nRet != DEVICE_OK)
         return nRet;
     SetPropertyLimits("Volts", minV_, maxV_);
 
-    CPropertyAction* pActB = new CPropertyAction(this, &LaserManagerPWM::OnState);
+    CPropertyAction *pActB = new CPropertyAction(this, &LaserManagerPWM::OnState);
     nRet = CreateProperty(MM::g_Keyword_State, "0", MM::Integer, false, pActB);
     if (nRet != DEVICE_OK)
         return nRet;
@@ -638,7 +632,7 @@ int LaserManagerPWM::Shutdown()
 
 int LaserManagerPWM::WriteToPort(unsigned long value)
 {
-    LaserManagerHub* hub = static_cast<LaserManagerHub*>(GetParentHub());
+    LaserManagerHub *hub = static_cast<LaserManagerHub *>(GetParentHub());
     if (!hub || !hub->IsPortAvailable())
         return ERR_NO_PORT_SET;
 
@@ -647,17 +641,17 @@ int LaserManagerPWM::WriteToPort(unsigned long value)
     hub->PurgeComPortH();
 
     Protocol::SetMotorCommand motorCommand{
-        (uint16_t)value
-    };
+        (uint16_t)value};
 
     std::vector<uint8_t> message = protocol_.createSetMotorMessage(motorCommand);
 
     // Convert full message to hex string
     std::ostringstream msgHexStream;
     msgHexStream << "[";
-    for (size_t i = 0; i < message.size(); ++i) {
+    for (size_t i = 0; i < message.size(); ++i)
+    {
         msgHexStream << "0x" << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
-            << static_cast<int>(message[i]);
+                     << static_cast<int>(message[i]);
         if (i != message.size() - 1)
             msgHexStream << " ";
     }
@@ -684,11 +678,13 @@ int LaserManagerPWM::WriteSignal(double volts)
 int LaserManagerPWM::SetSignal(double volts)
 {
     volts_ = volts;
-    if (gateOpen_) {
+    if (gateOpen_)
+    {
         gatedVolts_ = volts_;
         return WriteSignal(volts_);
     }
-    else {
+    else
+    {
         gatedVolts_ = 0;
     }
 
@@ -697,7 +693,8 @@ int LaserManagerPWM::SetSignal(double volts)
 
 int LaserManagerPWM::SetGateOpen(bool open)
 {
-    if (open) {
+    if (open)
+    {
         gateOpen_ = true;
         gatedVolts_ = volts_;
         return WriteSignal(volts_);
@@ -711,7 +708,7 @@ int LaserManagerPWM::SetGateOpen(bool open)
 // Action handlers
 ///////////////////////////////////////////////////////////////////////////////
 
-int LaserManagerPWM::OnVolts(MM::PropertyBase* pProp, MM::ActionType eAct)
+int LaserManagerPWM::OnVolts(MM::PropertyBase *pProp, MM::ActionType eAct)
 {
     if (eAct == MM::BeforeGet)
     {
@@ -727,7 +724,7 @@ int LaserManagerPWM::OnVolts(MM::PropertyBase* pProp, MM::ActionType eAct)
     return DEVICE_OK;
 }
 
-int LaserManagerPWM::OnMaxVolt(MM::PropertyBase* pProp, MM::ActionType eAct)
+int LaserManagerPWM::OnMaxVolt(MM::PropertyBase *pProp, MM::ActionType eAct)
 {
     if (eAct == MM::BeforeGet)
     {
@@ -738,12 +735,11 @@ int LaserManagerPWM::OnMaxVolt(MM::PropertyBase* pProp, MM::ActionType eAct)
         pProp->Get(maxV_);
         if (HasProperty("Volts"))
             SetPropertyLimits("Volts", 0.0, maxV_);
-
     }
     return DEVICE_OK;
 }
 
-int LaserManagerPWM::OnChannel(MM::PropertyBase* pProp, MM::ActionType eAct)
+int LaserManagerPWM::OnChannel(MM::PropertyBase *pProp, MM::ActionType eAct)
 {
     if (eAct == MM::BeforeGet)
     {
@@ -759,7 +755,7 @@ int LaserManagerPWM::OnChannel(MM::PropertyBase* pProp, MM::ActionType eAct)
     return DEVICE_OK;
 }
 
-int LaserManagerPWM::OnState(MM::PropertyBase* pProp, MM::ActionType eAct)
+int LaserManagerPWM::OnState(MM::PropertyBase *pProp, MM::ActionType eAct)
 {
     if (eAct == MM::BeforeGet)
     {

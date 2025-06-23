@@ -38,8 +38,7 @@ public class LaserPanel extends ConfigurablePanel {
     // Fields to hold the external listeners
     private ActionListener sliderListener;
     private ActionListener checkboxListener;
-    private ActionListener buttonListener;
-
+    private ActionListener textFieldListener;
 
 	public final String LASER_PERCENTAGE = "power percentage";
 	public final String LASER_OPERATION = "enable";
@@ -62,7 +61,7 @@ public class LaserPanel extends ConfigurablePanel {
 		add(label_1);
 		
 		tglbtnOnoff = new JCheckBox("On");
-		tglbtnOnoff.setBounds(47, 228, 45, 21);
+		tglbtnOnoff.setBounds(38, 228, 45, 21);
 		add(tglbtnOnoff);
 		
 		slider = new JSlider();
@@ -98,15 +97,10 @@ public class LaserPanel extends ConfigurablePanel {
         this.checkboxListener = listener;
     }
     
-    // Method to add an external listener for the button
-    public void addButtonListener(ActionListener listener) {
-        this.buttonListener = listener;
+    // Method to get the text from the text field
+    public void addTextFieldListener(ActionListener listener) {
+        this.textFieldListener = listener;
     }
-    
-//    // Method to get the text from the text field
-//    public String getTextFieldValue() {
-//        return textField.getText();
-//    }
 
 	@Override
 	protected void addComponentListeners() {

@@ -55,34 +55,9 @@ public class MyFrame extends ConfigurableMainFrame {
         panel.setLayout(new GridLayout(1, 0, 0, 0));
 
         // Create laser panels dynamically
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 6; i++) {
             LaserPanel laserPanel = new LaserPanel("laser" + i);
-            panel.add(laserPanel);
-           
-            // Button listener
-//            laserPanel.addButtonListener(e -> {
-//            	// Get the text from the text field
-//                String textValue = laserPanel.getTextFieldValue();
-//
-//                // Ensure the text contains only numbers
-//                if (textValue.matches("\\d+")) { // Check if the text is a valid number
-//                    float value = Float.parseFloat(textValue); // Convert to integer
-//
-//                    // Ensure the value is within the valid range (0-100)
-//                    if (value >= 0.0 && value <= 100.0) {
-//                        // Update the slider and label in the LaserPanel
-//                    	int percentage = Math.round(value);
-//                        laserPanel.getSlider().setValue(percentage);
-//                        laserPanel.getLblNewLabel().setText(percentage + "%");
-//                    } else {
-//                        // Handle invalid range (optional: show an error message)
-//                        System.out.println("Value must be between 0 and 100.");
-//                    }
-//                } else {
-//                    // Handle invalid input (optional: show an error message)
-//                    System.out.println("Invalid input. Please enter a number.");
-//                }
-//            });
+            panel.add(laserPanel);           
         }
     }
 }

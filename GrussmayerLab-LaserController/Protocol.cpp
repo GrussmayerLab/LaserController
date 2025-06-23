@@ -21,21 +21,23 @@ std::vector<uint8_t> Protocol::createGetDeviceMessage()
     return createMessage(CommandType::GET_DEVICE, {});
 }
 
-std::vector<uint8_t> Protocol::createSetLaserMessage(const SetLaserCommand& command)
+std::vector<uint8_t> Protocol::createSetSettingsMessage(const SetSettingsCommand& command)
 {
-    return createMessage(CommandType::SET_LASER, { command.chId, uint8_t(command.val >> 8), uint8_t(command.val & 0xFF) });
-}
+    std::vector<uint8_t> payload;
+    payload.push_back(command.avarage);
 
-std::vector<uint8_t> Protocol::createSetMotorMessage(const SetMotorCommand& command)
-{
-    return createMessage(CommandType::SET_MOTOR, { uint8_t(command.val >> 8), uint8_t(command.val & 0xFF) });
+    // Break float into 4 bytes
+    const uint8_t* exposureBytes = reinterpret_cast<const uint8_t*>(&command.exposure);
+    payload.insert(payload.end(), exposureBytes, exposureBytes + sizeof(float));
+
+    return createMessage(CommandType::SET_SETTINGS, payload);
 }
 
 bool Protocol::validateCRC(const std::vector<uint8_t>& message)
 {
     if (message.size() < 5) return false;
 
-    uint8_t receivedCRC = message[4];
+    uint8_t receivedCRC = message[message.size() - 2];
     std::vector<uint8_t> messageWithoutCRC(message.begin() + 1, message.end() - 2);
     uint8_t calculatedCRC = calculateXORChecksum(messageWithoutCRC);
 
@@ -120,6 +122,91 @@ bool Protocol::validateDeviceMessage(const std::vector<uint8_t>& message) {
                 << ", Identifier Byte: 0x"
                 << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
                 << static_cast<int>(identifierByte)
+                << "PayloadLenght: "
+                << payloadLength;
+
+            error = oss.str();
+        }
+    }
+    else {
+        error = "CRC validation failed. Message may be corrupted.";
+    }
+    return false;
+}
+
+bool Protocol::validateDataMessage(const std::vector<uint8_t>& message) {
+    if (message.size() < 2 *  128) {
+        error = "Message too short.";
+        return false;
+    }
+
+    auto startFlagIt = std::find(message.begin(), message.end(), START_FLAG);
+    auto stopFlagRevIt = std::find(message.rbegin(), message.rend(), STOP_FLAG);
+
+    if (startFlagIt == message.end() || stopFlagRevIt == message.rend()) {
+        error = "Message does not have the correct start and stop flags.";
+        return false;
+    }
+
+    auto stopFlagIt = stopFlagRevIt.base(); // This points to *after* the STOP_FLAG
+
+    if (startFlagIt >= stopFlagIt - 1) {
+        error = "Invalid message structure.";
+        return false;
+    }
+
+    // Core message: bytes between START_FLAG and STOP_FLAG (excluding both)
+    std::vector<uint8_t> coreMessage(startFlagIt + 1, stopFlagIt - 1);
+
+    // Check if coreMessage has the expected size
+    if (coreMessage.size() < (128*2)) {
+        error = "Core message too short.";
+        return false;
+    }
+
+    uint8_t payloadLength = coreMessage[1];
+    int expectedSize = 3 + payloadLength;
+
+    std::ostringstream coreHexStream;
+    coreHexStream << "[";
+    for (size_t i = 0; i < coreMessage.size(); ++i) {
+        coreHexStream << "0x" << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
+            << static_cast<int>(coreMessage[i]);
+        if (i != coreMessage.size() - 1)
+            coreHexStream << " ";
+    }
+    coreHexStream << "]";
+
+    std::ostringstream msgHexStream;
+    msgHexStream << "[";
+    for (size_t i = 0; i < message.size(); ++i) {
+        msgHexStream << "0x" << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
+            << static_cast<int>(message[i]);
+        if (i != message.size() - 1)
+            msgHexStream << " ";
+    }
+    msgHexStream << "]";
+
+
+    if (coreMessage.size() != expectedSize) {
+        error = "Message size is incorrect. Expected size: " + std::to_string(expectedSize) +
+            ", but got: " + std::to_string(coreMessage.size()) +
+            ". CoreMessage (hex): " + coreHexStream.str() +
+            ", Full Message (hex): " + msgHexStream.str();
+        return false;
+    }
+
+    if (validateCRC(message)) {
+        uint8_t commandByte = coreMessage[0];
+
+        if (commandByte == static_cast<uint8_t>(CommandType::GET_DATA)) {
+            return true;
+        }
+        else {
+            std::ostringstream oss;
+            oss << "Unknown command. Command Byte: 0x"
+                << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
+                << static_cast<int>(commandByte)
                 << "PayloadLenght: "
                 << payloadLength;
 
