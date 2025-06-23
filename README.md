@@ -1,10 +1,29 @@
+
 # Laser Controller Project
 
-This repository consists of the hardware, firmware, and software design for the Laser Controller system. It is divided into three main sections:
+## TL;DR (Quick Setup)
+
+1. **Assemble the PCB**: 
+   - Order the PCB from [JLCPCB](https://cart.jlcpcb.com) for ~$100 using the `gerber.zip`, `bom.csv`, and `laser_controller-top-pos.csv` files.
+   - Use compatible [JST cables](https://www.amazon.nl/-/en/Mini-Micro-150mm-Cable-Female/dp/B01DU9OY40).
+
+2. **Install MicroManager 2.0**:
+   - Download and install [MicroManager 2.0](https://download.micro-manager.org/nightly/2.0/Windows/).
+
+3. **Copy Files**:
+   - Copy the precompiled `EMU` folder and `mmgr_dal_GrussmayerLab-LaserController.dll` into the root directory of MicroManager.
+
+4. **Use the LaserControlGUI Plugin**:
+   - Run MicroManager, open the **LaserControlGUI** plugin from **EMU**, and start controlling the laser!
+
+---
+
+This repository consists of the hardware, firmware, and software design for the Laser Controller system. It is divided into four main sections:
 
 - **Electronics**: Schematic and PCB design files for the laser controller.
 - **LaserControlFirmware**: C/C++ firmware for the Raspberry Pi Pico.
-- **LaserControllerUI**: Java-based plugin for Micromanager, built upon the EMU plugin.
+- **GrussmayerLab-LaserController**: C++ Micromanager Device Adapter to drive the laser controller.
+- **LaserControlGUI**: Java-based plugin for Micromanager, built upon the EMU plugin.
 
 ## Table of Contents
 
@@ -25,91 +44,95 @@ This repository consists of the hardware, firmware, and software design for the 
 
 The Laser Controller project integrates hardware and software components to control a laser system. It consists of:
 
-1. **Hardware**: The electronics, which include a schematic and PCB design, are implemented to control the laser.
-2. **Firmware**: The Raspberry Pi Pico firmware written in C/C++ manages communication with the hardware.
-3. **Software**: The user interface for controlling the system is implemented as a Java plugin for Micromanager, based on the EMU plugin framework.
+1. **Hardware**: Electronics, including a schematic and PCB design, for laser control.
+2. **Firmware**: Raspberry Pi Pico firmware (C/C++) managing communication with the hardware.
+3. **Software**: A Java plugin for MicroManager, based on the EMU plugin framework, along with a C++ Device Adapter for MicroManager.
 
 ## Folders
 
 ### Electronics
 
-This folder contains the hardware designs for the laser controller, including:
+This folder contains the hardware designs for the laser controller:
 
-- **Schematic**: The electrical design for the laser control system.
-- **PCB Design**: The printed circuit board design files created using KiCAD.
+- **Schematic**: Electrical design for the laser control system.
+- **PCB Design**: Printed circuit board design files created using KiCAD.
 
 Files in this folder:
-- `schematic.kicad_sch`: The schematic file.
-- `pcb.kicad_pcb`: The PCB design file.
+- `schematic.kicad_sch`: Schematic file.
+- `pcb.kicad_pcb`: PCB design file.
 
-For more information on how to use KiCAD to view and modify these files, refer to the [KiCAD Documentation](https://kicad.org/documentation/).
+For more details, refer to the [KiCAD Documentation](https://kicad.org/documentation/).
 
 ### LaserControlFirmware
 
-This folder contains the firmware for the Raspberry Pi Pico written in C/C++ to control the laser system. The firmware interacts with the hardware designed in the **Electronics** folder.
+Firmware for the Raspberry Pi Pico, written in C/C++, responsible for controlling the laser system.
 
 Files in this folder:
-- `main.cpp`: The main program code for the Raspberry Pi Pico.
-- `CMakeLists.txt`: CMake configuration for building the project.
+- `main.cpp`: Main program code.
+- `CMakeLists.txt`: CMake configuration.
 - `README.md`: Firmware setup instructions.
 
-For compiling and flashing the firmware, you will need to follow the steps outlined below in the **Firmware Setup** section.
+### LaserControlGUI
 
-### LaserControllerUI
-
-This folder contains the Java plugin for Micromanager. The plugin extends Micromanager to communicate with the Laser Controller hardware.
-
-- Built on top of the EMU plugin, this software enables controlling the laser system via Micromanager.
-- The plugin allows the user to easily interface with the laser hardware through Micromanager's graphical user interface.
+Java-based plugin for Micromanager, allowing control of the laser system.
 
 Files in this folder:
-- `LaserControllerUI.java`: The main code for the plugin.
-
-For details on how to set up and install Micromanager with this plugin, refer to the **Software Setup** section.
+- `LaserPanel.java`: Laser slide panel code.
+- `MyFrame.java`: Main plugin UI containing multiple LaserPanel instances.
+- `MyPlugin.java`: Main plugin class implementing the UIPlugin interface.
 
 ## Getting Started
 
 ### Hardware Setup
 
-1. **Schematic and PCB Design**: Review the schematic and PCB design files in the `Electronics` folder to understand the hardware layout.
-   
-   You can use KiCAD to open these files and modify them if needed.
-
-2. **Assemble the Hardware**: After reviewing the designs, manufacture and assemble the PCB. You'll need components such as resistors, capacitors, connectors, etc., as specified in the schematic.
-
-3. **Connections**: Connect the Raspberry Pi Pico to the hardware according to the schematic provided in the `Electronics` folder.
+1. **Review Hardware Files**: Use KiCAD to view schematic and PCB design files in the `Electronics` folder.
+2. **Assemble the PCB**: Using `gerber.zip`, `bom.csv`, and `laser_controller-top-pos.csv`, you can assemble your PCB at [JLCPCB](https://cart.jlcpcb.com) for approximately $100.
+3. **Connect Components**: The board has **JST S3B-PH-K-S (LF)(SN)** connectors. Buy [compatible cables](https://www.amazon.nl/-/en/Mini-Micro-150mm-Cable-Female/dp/B01DU9OY40) and modify them as needed.
 
 ### Firmware Setup
 
-1. **Install Development Tools**: To compile the firmware, ensure you have the following tools installed:
+1. **Flashing Precompiled Firmware**:
+   - The compiled UF2 firmware is already included in the repository.
+   - Hold the **BOOTSEL** button on the Raspberry Pi Pico, connect it to a PC via USB, and it will appear as a **USB drive**.
+   - Copy the UF2 file to the drive, and the Pico is programmed.
+
+2. **Optional: Building from Source**:
+   If you wish to modify the firmware, install the following tools:
    - [Raspberry Pi Pico SDK](https://github.com/raspberrypi/pico-sdk)
    - [CMake](https://cmake.org/)
    - [ARM GCC Toolchain](https://developer.arm.com/tools-and-software/openSourceTools/gnu-toolchain/gnu-toolchain-r)
-   
-2. **Clone the Repository**: Ensure you have cloned the repository locally:
+
+   Clone the repository and build:
    ```bash
-   git clone https://github.com/yourusername/laser-controller.git
-   cd laser-controller/LaserControlFirmware
+   git clone https://github.com/GrussmayerLab/LaserController.git
+   cd LaserControlFirmware
+   mkdir build
+   cd build
+   cmake ..
+   make
+   ```
 
-3. **Build the Firmware**: Create a build directory:
-    ```bash
-    cd LaserControllerUI
-    mkdir build
-    cd build
-    cmake ..
-    make
-4. **Flash the Firmware**: Follow the instructions in the [Raspberry Pi Pico Documentation](https://www.raspberrypi.com/documentation/microcontrollers/pico-series.html) to flash the firmware to your Raspberry Pi Pico.
+### Software Setup
 
-#### Software Setup
+1. **Install MicroManager 2.0**:
+   - Download and install the latest version of [MicroManager 2.0](https://download.micro-manager.org/nightly/2.0/Windows/). Copy the precompiled `EMU` folder (provided) into the root directory of MicroManager.
 
-1. Install Micromanager: [Download and install Micromanager-gamma](https://micro-manager.org/news/2020-12-12-version-2-gamma-available).
-2. Follow the instruction on how to install [EMU](https://jdeschamps.github.io/EMU-guide/):
-3. Install the Plugin: Copy the generated .jar file into the EMU folder in Micro-Manager.
-3. Once installed, configure the plugin in Micromanager to interface with the Raspberry Pi Pico by opening Plugins/User Interface/EMU. Details of the configuration will be provided in the Micromanager UI.
+2. **Install the EMU Plugin** (for source code editing):
+   - If you wish to modify or extend the plugin, follow the instructions on how to install [EMU](https://jdeschamps.github.io/EMU-guide/):
 
-#### Usage
-* After setup, launch Micromanager and start the LaserControllerUI plugin.
-* The plugin should interface with the Raspberry Pi Pico and allow you to control the laser system via the Micromanager interface.
+3. **Install LaserControlGUI Plugin**:
+   - To enable the LaserControlUI plugin, export the Java project from Eclipse into the EMU folder in MicroManager.
 
-#### License
+4. **Install the Device Adapter**:
+   - Copy the `mmgr_dal_GrussmayerLab-LaserController.dll` file in the root directory of MicroManager.
+   - If you need to configure or extend the device adapter, follow the [MicroManager Visual Studio setup guide](https://micro-manager.org/Visual_Studio_project_settings_for_device_adapters). After setting up your project, place `.h` files in the header folder and `.cpp` files in the source folder. Compile the project, and place the resulting `.dll` file in the root directory of MicroManager.
+
+## Usage
+
+1. Start MicroManager.
+2. Open the **LaserControlGUI** plugin.
+3. The plugin will interface with the Raspberry Pi Pico, allowing laser control via MicroManager.
+
+## License
+
 This project is licensed under the MIT License - see the LICENSE file for details.
